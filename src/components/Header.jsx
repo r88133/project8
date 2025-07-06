@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { HiMoon, HiSun, HiMenu, HiX } from 'react-icons/hi'
 import { useTheme } from '../context/ThemeContext'
@@ -7,14 +8,15 @@ const Header = () => {
   const { darkMode, toggleTheme } = useTheme()
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const location = useLocation()
 
   const navLinks = [
-    { name: 'Home', href: '#home' },
-    { name: 'Skills', href: '#skills' },
-    { name: 'Projects', href: '#projects' },
-    { name: 'Certificates', href: '#certificates' },
-    { name: 'About', href: '#about' },
-    { name: 'Contact', href: '#contact' }
+    { name: 'Home', href: '/#home' },
+    { name: 'Skills', href: '/#skills' },
+    { name: 'Projects', href: '/#projects' },
+    { name: 'Certificates', href: '/#certificates' },
+    { name: 'About', href: '/#about' },
+    { name: 'Contact', href: '/#contact' }
   ]
 
   useEffect(() => {
@@ -107,6 +109,9 @@ const Header = () => {
     }
   }
 
+  // Check if we're on a skill detail page
+  const isSkillDetailPage = location.pathname.startsWith('/skill/')
+
   return (
     <>
       <motion.header 
@@ -114,7 +119,7 @@ const Header = () => {
         initial="initial"
         animate="animate"
         className={`fixed top-0 w-full z-50 transition-all duration-500 ease-out mobile-menu-container ${
-          isScrolled 
+          isScrolled || isSkillDetailPage
             ? 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg shadow-lg' 
             : 'bg-transparent'
         }`}
@@ -129,8 +134,8 @@ const Header = () => {
             className="flex items-center justify-between"
             style={{ 
               height: 'clamp(60px, 10vw, 80px)',
-              paddingTop: isScrolled ? '0.75rem' : 'clamp(1rem, 3vw, 1.5rem)',
-              paddingBottom: isScrolled ? '0.75rem' : 'clamp(1rem, 3vw, 1.5rem)'
+              paddingTop: isScrolled || isSkillDetailPage ? '0.75rem' : 'clamp(1rem, 3vw, 1.5rem)',
+              paddingBottom: isScrolled || isSkillDetailPage ? '0.75rem' : 'clamp(1rem, 3vw, 1.5rem)'
             }}
           >
             {/* Enhanced responsive logo */}
@@ -139,22 +144,23 @@ const Header = () => {
               whileHover={{ scale: 1.05 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
             >
-              <motion.a 
-                href="#home" 
+              <motion.div
                 className="font-bold text-primary-600 dark:text-primary-400 relative"
                 style={{ fontSize: 'clamp(1.25rem, 4vw, 2rem)' }}
                 whileHover={{ 
                   textShadow: "0 0 8px rgba(59, 130, 246, 0.5)"
                 }}
               >
-                Raj<span className="text-secondary-600 dark:text-secondary-400">Srivastava</span>
+                <Link to="/">
+                  Raj<span className="text-secondary-600 dark:text-secondary-400">Srivastava</span>
+                </Link>
                 <motion.div
                   className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-primary-500 to-secondary-500"
                   initial={{ width: 0 }}
                   whileHover={{ width: "100%" }}
                   transition={{ duration: 0.3 }}
                 />
-              </motion.a>
+              </motion.div>
             </motion.div>
 
             {/* Enhanced desktop navigation */}
@@ -173,23 +179,42 @@ const Header = () => {
               }}
             >
               {navLinks.map((link, index) => (
-                <motion.a 
+                <motion.div
                   key={index}
-                  href={link.href}
                   variants={linkVariants}
-                  className="font-medium text-gray-700 dark:text-gray-300 relative group"
-                  style={{ fontSize: 'clamp(0.875rem, 2vw, 1rem)' }}
                   whileHover={{ y: -2 }}
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
-                  {link.name}
-                  <motion.div
-                    className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-primary-500 to-secondary-500"
-                    initial={{ width: 0 }}
-                    whileHover={{ width: "100%" }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </motion.a>
+                  {link.href.startsWith('/#') ? (
+                    <a 
+                      href={link.href}
+                      className="font-medium text-gray-700 dark:text-gray-300 relative group"
+                      style={{ fontSize: 'clamp(0.875rem, 2vw, 1rem)' }}
+                    >
+                      {link.name}
+                      <motion.div
+                        className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-primary-500 to-secondary-500"
+                        initial={{ width: 0 }}
+                        whileHover={{ width: "100%" }}
+                        transition={{ duration: 0.3 }}
+                      />
+                    </a>
+                  ) : (
+                    <Link 
+                      to={link.href}
+                      className="font-medium text-gray-700 dark:text-gray-300 relative group"
+                      style={{ fontSize: 'clamp(0.875rem, 2vw, 1rem)' }}
+                    >
+                      {link.name}
+                      <motion.div
+                        className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-primary-500 to-secondary-500"
+                        initial={{ width: 0 }}
+                        whileHover={{ width: "100%" }}
+                        transition={{ duration: 0.3 }}
+                      />
+                    </Link>
+                  )}
+                </motion.div>
               ))}
             </motion.nav>
 
@@ -299,7 +324,7 @@ const Header = () => {
               exit="closed"
               className="fixed top-0 left-0 right-0 z-50 md:hidden bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700 mobile-menu-container"
               style={{ 
-                paddingTop: `calc(env(safe-area-inset-top) + ${isScrolled ? '60px' : 'clamp(60px, 10vw, 80px)'})`,
+                paddingTop: `calc(env(safe-area-inset-top) + ${isScrolled || isSkillDetailPage ? '60px' : 'clamp(60px, 10vw, 80px)'})`,
                 paddingLeft: 'env(safe-area-inset-left)',
                 paddingRight: 'env(safe-area-inset-right)',
                 paddingBottom: 'env(safe-area-inset-bottom)'
@@ -307,22 +332,40 @@ const Header = () => {
             >
               <div className="container-custom py-6 space-y-1">
                 {navLinks.map((link, index) => (
-                  <motion.a 
+                  <motion.div
                     key={index}
-                    href={link.href}
                     variants={mobileItemVariants}
-                    className="block py-4 px-4 font-medium text-gray-700 dark:text-gray-300 rounded-lg relative overflow-hidden group"
-                    style={{ fontSize: 'clamp(1rem, 3vw, 1.125rem)' }}
-                    onClick={() => setMobileMenuOpen(false)}
                     whileHover={{ x: 10 }}
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   >
-                    <motion.div
-                      className="absolute inset-0 bg-primary-50 dark:bg-primary-900/20 opacity-0 group-hover:opacity-100"
-                      transition={{ duration: 0.2 }}
-                    />
-                    <span className="relative z-10">{link.name}</span>
-                  </motion.a>
+                    {link.href.startsWith('/#') ? (
+                      <a 
+                        href={link.href}
+                        className="block py-4 px-4 font-medium text-gray-700 dark:text-gray-300 rounded-lg relative overflow-hidden group"
+                        style={{ fontSize: 'clamp(1rem, 3vw, 1.125rem)' }}
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <motion.div
+                          className="absolute inset-0 bg-primary-50 dark:bg-primary-900/20 opacity-0 group-hover:opacity-100"
+                          transition={{ duration: 0.2 }}
+                        />
+                        <span className="relative z-10">{link.name}</span>
+                      </a>
+                    ) : (
+                      <Link 
+                        to={link.href}
+                        className="block py-4 px-4 font-medium text-gray-700 dark:text-gray-300 rounded-lg relative overflow-hidden group"
+                        style={{ fontSize: 'clamp(1rem, 3vw, 1.125rem)' }}
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        <motion.div
+                          className="absolute inset-0 bg-primary-50 dark:bg-primary-900/20 opacity-0 group-hover:opacity-100"
+                          transition={{ duration: 0.2 }}
+                        />
+                        <span className="relative z-10">{link.name}</span>
+                      </Link>
+                    )}
+                  </motion.div>
                 ))}
               </div>
             </motion.div>
