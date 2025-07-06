@@ -1,5 +1,5 @@
 import React, { Suspense, useRef, useEffect } from 'react'
-import { useParams, Link, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls, Text, Box, Sphere, Torus, Cone, Cylinder } from '@react-three/drei'
@@ -191,6 +191,24 @@ const SkillDetailPage = () => {
     }
   }, [skill, navigate])
 
+  // Handle back navigation
+  const handleBackNavigation = () => {
+    navigate('/')
+    // Small delay to ensure navigation completes, then scroll to skills
+    setTimeout(() => {
+      const skillsSection = document.getElementById('skills')
+      if (skillsSection) {
+        const headerHeight = 80
+        const elementPosition = skillsSection.offsetTop - headerHeight
+        
+        window.scrollTo({
+          top: elementPosition,
+          behavior: 'smooth'
+        })
+      }
+    }, 100)
+  }
+
   if (!skill) {
     return null
   }
@@ -355,8 +373,8 @@ const SkillDetailPage = () => {
         >
           <div className="container-custom py-4">
             <div className="flex items-center justify-between">
-              <Link 
-                to="/#skills"
+              <button 
+                onClick={handleBackNavigation}
                 className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors group"
               >
                 <motion.div
@@ -366,7 +384,7 @@ const SkillDetailPage = () => {
                   <HiArrowLeft className="text-xl" />
                 </motion.div>
                 <span className="font-medium">Back to Skills</span>
-              </Link>
+              </button>
               
               <motion.h1 
                 className={`text-xl font-bold ${skill.iconColor} ${skill.darkIconColor}`}
@@ -531,18 +549,46 @@ const SkillDetailPage = () => {
                   Let's discuss how we can work together on {skill.title.toLowerCase()} projects
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                  <Link 
-                    to="/#contact"
+                  <button 
+                    onClick={() => {
+                      navigate('/')
+                      setTimeout(() => {
+                        const contactSection = document.getElementById('contact')
+                        if (contactSection) {
+                          const headerHeight = 80
+                          const elementPosition = contactSection.offsetTop - headerHeight
+                          
+                          window.scrollTo({
+                            top: elementPosition,
+                            behavior: 'smooth'
+                          })
+                        }
+                      }, 100)
+                    }}
                     className="btn-primary"
                   >
                     Get In Touch
-                  </Link>
-                  <Link 
-                    to="/#projects"
+                  </button>
+                  <button 
+                    onClick={() => {
+                      navigate('/')
+                      setTimeout(() => {
+                        const projectsSection = document.getElementById('projects')
+                        if (projectsSection) {
+                          const headerHeight = 80
+                          const elementPosition = projectsSection.offsetTop - headerHeight
+                          
+                          window.scrollTo({
+                            top: elementPosition,
+                            behavior: 'smooth'
+                          })
+                        }
+                      }, 100)
+                    }}
                     className="btn-professional"
                   >
                     View Projects
-                  </Link>
+                  </button>
                 </div>
               </div>
             </motion.section>

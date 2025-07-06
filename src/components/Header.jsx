@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { HiMoon, HiSun, HiMenu, HiX } from 'react-icons/hi'
 import { useTheme } from '../context/ThemeContext'
@@ -9,14 +9,15 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const location = useLocation()
+  const navigate = useNavigate()
 
   const navLinks = [
-    { name: 'Home', href: '/#home' },
-    { name: 'Skills', href: '/#skills' },
-    { name: 'Projects', href: '/#projects' },
-    { name: 'Certificates', href: '/#certificates' },
-    { name: 'About', href: '/#about' },
-    { name: 'Contact', href: '/#contact' }
+    { name: 'Home', href: '/', section: 'home' },
+    { name: 'Skills', href: '/', section: 'skills' },
+    { name: 'Projects', href: '/', section: 'projects' },
+    { name: 'Certificates', href: '/', section: 'certificates' },
+    { name: 'About', href: '/', section: 'about' },
+    { name: 'Contact', href: '/', section: 'contact' }
   ]
 
   useEffect(() => {
@@ -52,6 +53,35 @@ const Header = () => {
       document.body.style.overflow = 'unset'
     }
   }, [mobileMenuOpen])
+
+  // Handle navigation with smooth scrolling
+  const handleNavigation = (section) => {
+    setMobileMenuOpen(false)
+    
+    if (location.pathname !== '/') {
+      // If not on home page, navigate to home first, then scroll
+      navigate('/')
+      setTimeout(() => {
+        scrollToSection(section)
+      }, 100)
+    } else {
+      // If on home page, just scroll to section
+      scrollToSection(section)
+    }
+  }
+
+  const scrollToSection = (section) => {
+    const element = document.getElementById(section)
+    if (element) {
+      const headerHeight = 80
+      const elementPosition = element.offsetTop - headerHeight
+      
+      window.scrollTo({
+        top: elementPosition,
+        behavior: 'smooth'
+      })
+    }
+  }
 
   const headerVariants = {
     initial: { y: -100, opacity: 0 },
@@ -145,15 +175,14 @@ const Header = () => {
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
             >
               <motion.div
-                className="font-bold text-primary-600 dark:text-primary-400 relative"
+                className="font-bold text-primary-600 dark:text-primary-400 relative cursor-pointer"
                 style={{ fontSize: 'clamp(1.25rem, 4vw, 2rem)' }}
                 whileHover={{ 
                   textShadow: "0 0 8px rgba(59, 130, 246, 0.5)"
                 }}
+                onClick={() => handleNavigation('home')}
               >
-                <Link to="/">
-                  Raj<span className="text-secondary-600 dark:text-secondary-400">Srivastava</span>
-                </Link>
+                Raj<span className="text-secondary-600 dark:text-secondary-400">Srivastava</span>
                 <motion.div
                   className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-primary-500 to-secondary-500"
                   initial={{ width: 0 }}
@@ -185,35 +214,19 @@ const Header = () => {
                   whileHover={{ y: -2 }}
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
-                  {link.href.startsWith('/#') ? (
-                    <a 
-                      href={link.href}
-                      className="font-medium text-gray-700 dark:text-gray-300 relative group"
-                      style={{ fontSize: 'clamp(0.875rem, 2vw, 1rem)' }}
-                    >
-                      {link.name}
-                      <motion.div
-                        className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-primary-500 to-secondary-500"
-                        initial={{ width: 0 }}
-                        whileHover={{ width: "100%" }}
-                        transition={{ duration: 0.3 }}
-                      />
-                    </a>
-                  ) : (
-                    <Link 
-                      to={link.href}
-                      className="font-medium text-gray-700 dark:text-gray-300 relative group"
-                      style={{ fontSize: 'clamp(0.875rem, 2vw, 1rem)' }}
-                    >
-                      {link.name}
-                      <motion.div
-                        className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-primary-500 to-secondary-500"
-                        initial={{ width: 0 }}
-                        whileHover={{ width: "100%" }}
-                        transition={{ duration: 0.3 }}
-                      />
-                    </Link>
-                  )}
+                  <button
+                    onClick={() => handleNavigation(link.section)}
+                    className="font-medium text-gray-700 dark:text-gray-300 relative group"
+                    style={{ fontSize: 'clamp(0.875rem, 2vw, 1rem)' }}
+                  >
+                    {link.name}
+                    <motion.div
+                      className="absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-primary-500 to-secondary-500"
+                      initial={{ width: 0 }}
+                      whileHover={{ width: "100%" }}
+                      transition={{ duration: 0.3 }}
+                    />
+                  </button>
                 </motion.div>
               ))}
             </motion.nav>
@@ -338,33 +351,17 @@ const Header = () => {
                     whileHover={{ x: 10 }}
                     transition={{ type: "spring", stiffness: 400, damping: 17 }}
                   >
-                    {link.href.startsWith('/#') ? (
-                      <a 
-                        href={link.href}
-                        className="block py-4 px-4 font-medium text-gray-700 dark:text-gray-300 rounded-lg relative overflow-hidden group"
-                        style={{ fontSize: 'clamp(1rem, 3vw, 1.125rem)' }}
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        <motion.div
-                          className="absolute inset-0 bg-primary-50 dark:bg-primary-900/20 opacity-0 group-hover:opacity-100"
-                          transition={{ duration: 0.2 }}
-                        />
-                        <span className="relative z-10">{link.name}</span>
-                      </a>
-                    ) : (
-                      <Link 
-                        to={link.href}
-                        className="block py-4 px-4 font-medium text-gray-700 dark:text-gray-300 rounded-lg relative overflow-hidden group"
-                        style={{ fontSize: 'clamp(1rem, 3vw, 1.125rem)' }}
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        <motion.div
-                          className="absolute inset-0 bg-primary-50 dark:bg-primary-900/20 opacity-0 group-hover:opacity-100"
-                          transition={{ duration: 0.2 }}
-                        />
-                        <span className="relative z-10">{link.name}</span>
-                      </Link>
-                    )}
+                    <button
+                      onClick={() => handleNavigation(link.section)}
+                      className="block w-full text-left py-4 px-4 font-medium text-gray-700 dark:text-gray-300 rounded-lg relative overflow-hidden group"
+                      style={{ fontSize: 'clamp(1rem, 3vw, 1.125rem)' }}
+                    >
+                      <motion.div
+                        className="absolute inset-0 bg-primary-50 dark:bg-primary-900/20 opacity-0 group-hover:opacity-100"
+                        transition={{ duration: 0.2 }}
+                      />
+                      <span className="relative z-10">{link.name}</span>
+                    </button>
                   </motion.div>
                 ))}
               </div>
